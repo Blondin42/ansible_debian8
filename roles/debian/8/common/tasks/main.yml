@@ -1,0 +1,10 @@
+---
+# his playbook contains common debian 8
+#- include: global.yml
+
+#- include: npm.yml
+
+#- include: apache2.yml
+
+- include: teamspeak.yml
+  when: teamspeak_server.install is defined and teamspeak_server.install == "true"

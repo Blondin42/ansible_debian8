@@ -1,0 +1,20 @@
+---
+- name: Create Teamspeak user
+  user: name={{teamspeak.owner}} shell=/sbin/nologin comment="Teamspeak 3 User"
+
+- name: Make Teamspeak user owns directory
+  file:
+    path: "{{teamspeak.path}}"
+    owner: "{{teamspeak.owner}}"
+    group: "{{teamspeak.owner}}"
+    state: directory
+    recurse: yes
+
+- name: Unarchive teamspeak
+  unarchive: src="{{teamspeak.url}}" dest="{{teamspeak.path}}" copy=no
+
+- name: MySQL Teamspeak configuration file
+  template: src=ts3db_mysql.ini.j2 dest={{teamspeak.path}}/teamspeak3-server_linux_amd64/ts3db_mysql.ini owner={{teamspeak.owner}} group={{teamspeak.owner}} mode=0600
+
+- name: Teamspeak Server configuration file
+  template: src=ts3server.ini.j2 dest={{teamspeak.path}}/teamspeak3-server_linux_amd64/ts3server.ini owner={{teamspeak.owner}} group={{teamspeak.owner}} mode=0600

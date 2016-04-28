@@ -1,0 +1,10 @@
+---
+
+- name: Repository for NPM
+  action: shell curl --silent --location https://deb.nodesource.com/setup_0.12 | bash -
+
+- name: Install NPM
+  apt: name=nodejs state=latest update_cache=yes
+
+- name: Update NPM
+  shell: curl https://www.npmjs.com/install.sh | sh  

@@ -1,0 +1,43 @@
+input {
+  file {
+    type => "linux-syslog"
+    path => [ "/var/log/daemon.log", "/var/log/syslog" ]
+  }
+  file {
+    type => "linux-auth"
+    path => "/var/log/auth.log"
+  }
+  file {
+    type => "linux-mail"
+    path => "/var/log/mail.info"
+  }
+  file {
+    type => "linux-apt"
+    path => "/var/log/aptitude"
+  }
+  file {
+    type => "kern-log"
+    path => "/var/log/kern.log"
+  }
+  file {
+    type => "apache-access"
+    path => "/var/log/apache2/access.log"
+  }
+}
+
+output {
+  elasticsearch {
+    host => "{{ elasticsearch.host }}"
+    cluster => "{{ elasticsearch.clustername }}"
+    user => "{{  elasticsearch.user }}"
+    password => "{{ elasticsearch.password }}"
+    protocol => "http"
+  }
+  statsd {
+    # Count one hit every event by response
+    increment => "apache.response.%{response}"
+
+    # Use the 'bytes' field from the apache log as the count value.
+    count => [ "apache.bytes", "%{bytes}" ]
+  }
+}

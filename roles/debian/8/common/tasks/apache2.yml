@@ -1,0 +1,33 @@
+---
+
+- name: Install apache2
+  apt: name={{ item }}  state=latest update_cache=yes
+  with_items:
+    - apache2
+    - libapache2-mod-proxy-html
+    - apache2-mpm-worker
+
+- name: Apache - Module Installation
+  apache2_module: state=present name={{ item }}
+  with_items:
+  - rewrite
+  - ssl
+  - headers
+  - proxy
+  - proxy_http
+  - actions
+  - alias
+  - proxy_connect
+  - proxy_balancer
+  - deflate
+
+- name: Apache - configuration
+  template: src=000-default.conf.j2 dest=/etc/apache2/sites-available/000-default.conf
+  notify: Handler - restart apache2
+
+- name: link site default
+  file: src=/etc/apache2/sites-available/000-default.conf dest=/etc/apache2/sites-enabled/000-default.conf state=link
+  notify: Handler - restart apache2
+      
+
+                                        

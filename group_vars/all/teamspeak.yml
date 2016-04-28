@@ -1,0 +1,13 @@
+---
+teamspeak:
+  version: "3.0.12.3"
+  owner: "teamspeak"
+  url: "http://dl.4players.de/ts/releases/3.0.12.3/teamspeak3-server_linux_amd64-3.0.12.3.tar.bz2"
+  path: "/home/teamspeak/"
+  log_dir: "/var/log/teamspeak"
+  mysql:
+    host: "127.0.0.1"
+    port: "3306"
+    user: "teamspeak"
+    password: "1234password4321"
+    database: "teamspeak"

@@ -1,0 +1,55 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+export HISTCONTROL=ignoredups
+export HISTCONTROL=ignoreboth
+export EDITOR=emacs
+export PROMPT_COMMAND='history -a >(tee -a ~/.bash_history | logger -t "bash_history $USER[$$] $SSH_CONNECTION")'
+shopt -s checkwinsize
+
+export PS1="\[\e[00;31m\]\u\[\e[0m\]\[\e[00;37m\]@\[\e[0m\]\[\e[00;32m\]\H\[\e[0m\]\[\e[00;37m\]:\[\e[0m\]\[\e[00;33m\]\w\[\e[0m\]\[\e[00;37m\] \[\e[0m\]\[\e[00;34m\][\t]\[\e[0m\]\[\e[00;37m\]\n\[\e[0m\]\[\e[00;35m\]\\$\[\e[0m\]\[\e[00;37m\] \[\e[0m\]"
+umask 022
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto -F'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias l='ls $LS_OPTIONS -lAh'
+
+alias grep='grep --color=auto'
+alias nano='nano -w'
+
+# Some more alias to avoid making mistakes:
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias ne='emacs'
+alias clean='find * -name "*~" -exec rm {} \;'
+alias ll='ls -l'
+alias la='ls -a'
+alias l='ls -la'
+alias ne='emacs'
+alias rm='rm -v'
+alias clean='rm *~ ; rm  *.pyc; rm *.core; rm .*~; rm \#*'
+alias sssh='ssh -l root'
+alias diff='colordiff'
+alias avr='asterisk -vvvvvvvvvr'
+export EDITOR='emacs'
+export LC_ALL="en_US.UTF-8"
+
+
+findreplace(){
+    printf "Search: ${1}\n"
+        printf "Replace: ${2}\n"
+	    printf "In the following files: \n"
+
+    find . -name '*php' | while read line; do
+            echo -e "\t '$line'"
+	        done
+
+    find . -name "${3}" | xargs -n1 sed -i '' "s/${1}/${2}/g";
+    }
+
+. /etc/bash_completion

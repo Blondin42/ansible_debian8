@@ -1,0 +1,39 @@
+<VirtualHost *:80>
+        ServerName {{ fqdn }}
+
+	ProxyRequests Off
+        ProxyPreserveHost On
+        DocumentRoot /var/www/CT_APP/src/dist
+
+        Header always set Access-Control-Allow-Origin "*"
+        Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+        Header always set Access-Control-Max-Age "1000"
+        Header always set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token, access_token"
+        RewriteEngine On
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+        ServerName {{ fqdn }}
+
+        ProxyRequests Off
+        ProxyPreserveHost On
+
+        Header always set Access-Control-Allow-Origin "*"
+        Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+        Header always set Access-Control-Max-Age "1000"
+        Header always set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token, access_token"
+        RewriteEngine On
+        RewriteCond %{REQUEST_METHOD} OPTIONS
+        <Location />
+                  ProxyPass http://localhost:7000/
+                  ProxyPassReverse http://localhost:7000/
+                  Order allow,deny
+                  Allow from all
+        </Location>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>

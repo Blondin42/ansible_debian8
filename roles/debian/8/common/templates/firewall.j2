@@ -1,0 +1,54 @@
+#!/bin/bash
+
+IPT=/sbin/iptables
+IP_MONITORING={{ monitoring.ip }}
+IP_BACKUP={{ backup.ip }}
+
+stop_firewall()
+{
+        $IPT -F
+        $IPT -F -t nat
+        $IPT -X
+
+        $IPT -P INPUT ACCEPT
+}
+
+start_firewall()
+{
+        $IPT -P INPUT DROP
+
+        $IPT -A INPUT -i lo -j ACCEPT
+
+        $IPT -A INPUT -s 10.0.1.0/26 -j ACCEPT                                                  # LOCAL L4 NETWORK
+        $IPT -A INPUT -s 194.98.51.65/26 -j ACCEPT                                              # LOCAL L4 NETWORK
+        $IPT -A INPUT -s 194.98.143.129/26 -j ACCEPT                                            # LOCAL L4 NETWORK
+        $IPT -A INPUT -s 212.155.134.17/28 -j ACCEPT                                            # LOCAL L4 NETWORK
+
+        $IPT -A INPUT -p tcp -s $IP_MONITORING --dport 10050 -j ACCEPT                          # ZABBIX
+        $IPT -A INPUT -p tcp -s $IP_BACKUP --dport 9102 -j ACCEPT                               # BACULA
+
+        $IPT -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+        $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT                          # SSH
+        $IPT -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT                          # HTTP
+        $IPT -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT                         # HTTPS
+        $IPT -A INPUT -p icmp --icmp-type echo-request -j ACCEPT                                # PING (icmp)
+}
+
+case "$1" in
+        start)
+                echo "Starting firewall."
+                start_firewall
+                ;;
+        stop)
+                echo "Stopping firewall."
+                stop_firewall
+                ;;
+        restart)
+                echo "Restarting firewall."
+                stop_firewall
+                start_firewall
+                ;;
+        *)
+                echo "Usage: $0 (start|stop|restart)"
+                ;;
+esac

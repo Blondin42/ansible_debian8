@@ -1,0 +1,10 @@
+---
+fqdn: "framboise"
+hostname: "framboise"
+timezone: "Europe/Paris"
+teamspeak_server:
+  install: "true"
+
+# feature not done yet
+#docker:
+#  install: "true"

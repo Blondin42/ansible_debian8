@@ -1,0 +1,14 @@
+---
+- name: Common configuration Debian 8 servers
+  hosts:
+    - framboise
+  roles:
+    - debian/8/common
+
+
+
+#- name: Common configuration Debian 7 servers
+#  hosts:
+#    - ct-core-02
+#  roles:
+#    - debian/7/common

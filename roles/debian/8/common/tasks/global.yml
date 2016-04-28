@@ -1,0 +1,114 @@
+---
+
+- name: update the hosts file
+  template: src=hosts.j2 dest=/etc/hosts
+  
+- name: Resolv.conf
+  template: src=resolv.conf.j2 dest=/etc/resolv.conf
+
+- name: Debian 8 - Add repository Debian
+  template: src=sources.list.j2 dest=/etc/apt/sources.list
+
+- name: Install apt-key for ELK
+  apt_key: url=https://packages.elasticsearch.org/GPG-KEY-elasticsearch
+
+- name: Install apt-key for JAVA
+  apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=EEA14886 state=present
+
+- name: apt-get update & upgrade
+  apt: upgrade=yes update_cache=yes
+
+- name: Install basic softwares
+  apt: name={{ item }}  state=latest update_cache=yes
+  with_items:
+    - emacs24-nox
+    - telnet
+    - wget
+    - ntpdate
+    - rsync
+    - tmux
+    - ntp
+    - build-essential
+    - linux-headers-amd64
+    - openssh-server
+    - curl
+    - git
+    - pkg-config
+    - automake
+    - libtool
+    - autoconf
+    - uuid
+    - uuid-dev
+    - python-pip
+    - htop
+    - zsh
+    - sudo
+    - lsb-release
+    - bash-completion
+    - screen
+    - python-apt
+    - fail2ban
+    - colordiff
+    - python-pip
+    - cron-apt
+    - makepasswd
+    - logstash
+    - debconf
+    - open-vm-tools
+    - ant
+    - libxml2-dev
+    - colordiff
+    - dos2unix
+    - chkconfig
+
+- name: Creates ssh folder
+  file: path=/root/.ssh state=directory
+
+- name: Creates script folder
+  file: path=/etc/scripts state=directory
+
+- name: Created backup folder
+  file: path=/backup/ state=directory
+
+- name: bashrc
+  copy: src=bashrc dest=/root/.bashrc
+
+- name: authorized_keys
+  copy: src=authorized_keys dest=/root/.ssh/authorized_keys mode=0600
+
+- name: locale
+  locale_gen: name=en_US.UTF-8 state=present
+
+- name: hostname
+  hostname: name="{{ fqdn }}"
+
+- name: Copy over the NTP configuration
+  file: src=ntp.conf dest=/etc/ntp.conf
+  notify:
+    - Handler - restart ntp
+
+- name: Update ntpdate
+  shell: "/etc/init.d/ntp stop && ntpdate pool.ntp.org && /etc/init.d/ntp start"
+
+- name: set /etc/localtime
+  file: src=/usr/share/zoneinfo/{{ timezone }} dest=/etc/localtime state=link force=yes
+
+- name: update tzdata
+  command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
+  notify:
+    - Handler - restart rsyslog
+
+- name: firewall configuration
+  template: src=firewall.j2 dest=/etc/init.d/firewall mode=0755
+
+- name : enable service firewall updaterc
+  shell: update-rc.d firewall defaults
+  
+- name: ensure firewall service is start
+  service: name=firewall state=started
+
+- name: Emacs php mode enable
+  copy: src=php-mode.el dest=/root/.emacs.d/php-mode.el
+
+- name: Emacs yaml mode enable
+  copy: src=yaml-mode.el dest=/root/.emacs.d/yaml-mode.el

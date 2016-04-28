@@ -1,0 +1,6 @@
+---
+elasticsearch:
+  host: "10.42.42.42"
+  clustername: "elasticsearch-01"
+  user: "elasticsearch"
+  password: "secretpassword123@"

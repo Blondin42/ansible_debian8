@@ -1,0 +1,15 @@
+---
+
+- name: Handler - restart rsyslog
+  service: name=rsyslog state=restarted
+
+- name: Handler - restart logstash
+  service: name=logstash state=restarted
+
+- name: Handler - restart apache2
+  service: name=apache2 state=restarted
+
+- name: Handler - restart ntp
+  service: name=ntp state=restarted
+
+
